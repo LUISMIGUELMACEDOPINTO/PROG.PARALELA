@@ -1,4 +1,4 @@
-
+#PROGRAMACION PARALELA
 #include <iostream>
 #include <omp.h>
 using namespace std;
@@ -16,6 +16,40 @@ int main() {
     
      double tick = omp_get_wtick();
     cout << "Tiempo de proceso: " << (fin - inicio) / tick << " ticks" << endl;
+
+    return 0;
+}
+
+#PROGRAMACION CONCURRENTE
+#include <iostream>
+#include <thread>
+#include <mutex>
+using namespace std;
+mutex mtx; // Mutex para garantizar la exclusión mutua en la suma total
+
+void sumar_rango(int inicio, int fin, int& suma_total) {
+    int suma_parcial = 0;
+    for (int i = inicio; i <= fin; ++i) {
+        suma_parcial += i;
+    }
+
+    // Agregar la suma parcial a la suma total de manera segura con un mutex
+    mtx.lock();
+    suma_total += suma_parcial;
+    mtx.unlock();
+}
+
+int main() {
+    const int N = 100;
+    int suma_total = 0;
+
+    thread t1(sumar_rango, 1, N/2, ref(suma_total)); // Primer hilo suma la primera mitad
+    thread t2(sumar_rango, N/2 + 1, N, ref(suma_total)); // Segundo hilo suma la segunda mitad
+
+    t1.join();
+    t2.join();
+
+    cout << "La suma de los números del 1 al 100 es: " << suma_total << endl;
 
     return 0;
 }
