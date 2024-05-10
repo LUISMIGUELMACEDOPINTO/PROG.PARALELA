@@ -1,1 +1,21 @@
 
+#include <iostream>
+#include <omp.h>
+using namespace std;
+int main() {
+    const int N = 100;
+    int suma_total = 0;
+    double inicio = omp_get_wtime(); // Tiempo de inicio
+    #pragma omp parallel for reduction(+:suma_total)
+    for (int i = 1; i <= N; ++i) {
+        suma_total += i;
+    }
+    double fin = omp_get_wtime(); // Tiempo de finalización
+    
+    cout << "La suma de los números del 1 al 100 es: " << suma_total << endl;
+    
+     double tick = omp_get_wtick();
+    cout << "Tiempo de proceso: " << (fin - inicio) / tick << " ticks" << endl;
+
+    return 0;
+}
